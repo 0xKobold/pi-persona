@@ -74,7 +74,7 @@ function getPrompt(projectDir: string): string {
 // Extension Entry Point
 // ============================================================================
 
-export default function personaExtension(pi: ExtensionAPI): void {
+export default async function personaExtension(pi: ExtensionAPI): Promise<void> {
   console.log("[pi-persona] Loading persona extension...");
 
   // --------------------------------------------------------------------------

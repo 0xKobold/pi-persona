@@ -1,8 +1,35 @@
 # @0xkobold/pi-persona
 
-Scope-aware persona management for pi agents.
+Scope-aware persona management for [pi](https://pi.dev) agents.
 
 **Global persona = who the agent IS.** Project persona = situational augmentation.
+
+Part of the [0xKobold](https://github.com/0xKobold) ecosystem.
+
+## Installation
+
+### Bundled (recommended)
+
+```bash
+pi install npm:@0xkobold/pi-kobold
+# pi-persona loaded as sub-extension automatically
+```
+
+### Standalone
+
+```bash
+pi install npm:@0xkobold/pi-persona
+
+# Or in pi-config.ts
+{
+  extensions: [
+    'npm:@0xkobold/pi-persona'
+  ]
+}
+
+# Or temporary (testing)
+pi -e npm:@0xkobold/pi-persona
+```
 
 ## How It Works
 
@@ -52,29 +79,6 @@ If no frontmatter, scope is inferred from location:
 | **MEMORY.md** | 70 | Long-term curated memories | Project-specific memory |
 | **TOOLS.md** | 50 | Tool notes and preferences | Project tool config |
 
-## System Prompt Injection
-
-The extension injects into the system prompt at `before_agent_start`:
-
-```
-## Persona Context
-
-Your core persona is defined by SOUL.md. **Embody its persona and tone.**
-Avoid stiff, generic replies; follow its guidance unless higher-priority
-instructions override it.
-
-### Core Persona (global)
-#### ~/.0xkobold/SOUL.md
-[content]
-
-### Project Augmentation (local)
-The following files are project-specific. They augment your core persona
-for THIS project only.
-
-#### .0xkobold/SOUL.md ⚡OVERRIDE *(explicitly scoped to this project)*
-[content]
-```
-
 ## Commands
 
 | Command | Description |
@@ -105,6 +109,72 @@ persona({ action: "update", file: "IDENTITY.md", content: "---\nscope: project\n
 persona({ action: "init-project" })
 ```
 
+## System Prompt Injection
+
+The extension injects into the system prompt at `before_agent_start`:
+
+```
+## Persona Context
+
+Your core persona is defined by SOUL.md. **Embody its persona and tone.**
+Avoid stiff, generic replies; follow its guidance unless higher-priority
+instructions override it.
+
+### Core Persona (global)
+#### ~/.0xkobold/SOUL.md
+[content]
+
+### Project Augmentation (local)
+The following files are project-specific. They augment your core persona
+for THIS project only.
+
+#### .0xkobold/SOUL.md ⚡OVERRIDE *(explicitly scoped to this project)*
+[content]
+```
+
+## API Functions
+
+Library functions are importable for programmatic use:
+
+```typescript
+import {
+  buildPersonaState,
+  formatPersonaForPrompt,
+  parseIdentityMarkdown,
+  identityHasValues,
+  scaffoldPersonaFiles,
+  scaffoldProjectPersonaFiles,
+  getDefaultTemplates,
+  FILENAMES,
+  type PersonaFile,
+  type PersonaState,
+  type AgentIdentity,
+  type ScaffoldResult,
+} from "@0xkobold/pi-persona/core";
+
+// Build persona state for a project directory
+const state = buildPersonaState("/path/to/project", getDefaultTemplates());
+console.log(state.identity?.name, state.hasSoul, state.overrides);
+
+// Format persona files for injection into a prompt
+const prompt = formatPersonaForPrompt(state.files);
+
+// Parse an IDENTITY.md file
+const identity = parseIdentityMarkdown(markdownContent);
+if (identityHasValues(identity)) {
+  console.log(identity.name, identity.emoji, identity.vibe);
+}
+
+// Scaffold default global persona files
+const result = await scaffoldPersonaFiles();
+// result.created = ["SOUL.md", "IDENTITY.md", "USER.md"]
+// result.skipped = []
+// result.dir = "/home/user/.0xkobold"
+
+// Scaffold project-scoped files with frontmatter
+const projResult = await scaffoldProjectPersonaFiles("/path/to/project");
+```
+
 ## Architecture
 
 ```
@@ -117,31 +187,22 @@ src/
     └── index.ts             # Barrel export
 ```
 
-## Integration with pi-kobold
+## Related Packages
 
-Add to `pi-config.ts`:
+- [`@0xkobold/pi-kobold`](https://github.com/0xKobold/pi-kobold) — Meta-extension that bundles this and other sub-extensions
+- [`@0xkobold/pi-learn`](https://github.com/0xKobold/pi-learn) — Persistent memory & reasoning for pi agents
+- [`@0xkobold/pi-ollama`](https://github.com/0xKobold/pi-ollama) — Ollama integration for pi agents
 
-```typescript
-extensions: [
-  // ... other extensions
-  './node_modules/@0xkobold/pi-persona/dist/index.js',
-]
+## Local Development
+
+```bash
+git clone https://github.com/0xKobold/pi-persona
+cd pi-persona
+npm install
+npm run build
+pi install ./
 ```
-
-Or as a pi-kobold sub-extension (the factory pattern):
-
-```typescript
-import personaExtension from "@0xkobold/pi-persona";
-
-// In pi-kobold's index.ts sub-extension loading:
-await personaExtension(pi);
-```
-
-## Replaces
-
-- `persona-loader-extension.ts` (scaffolded files but never injected into prompt)
-- Persona parts of `memory-bootstrap-extension.ts` (identity loading fallback)
 
 ## License
 
-MIT
+MIT © 0xKobold

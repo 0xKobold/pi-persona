@@ -19,11 +19,14 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./core": {
+      "import": "./dist/core/index.js",
+      "types": "./dist/core/index.d.ts"
     }
   },
   "files": [
     "dist/",
-    "templates/",
     "README.md"
   ],
   "scripts": {
@@ -45,6 +48,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/0xKobold/pi-persona"
-  }
+    "url": "https://github.com/0xKobold/pi-persona.git"
+  },
+  "bugs": {
+    "url": "https://github.com/0xKobold/pi-persona/issues"
+  },
+  "homepage": "https://github.com/0xKobold/pi-persona#readme"
 }
