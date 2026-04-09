@@ -1,0 +1,50 @@
+{
+  "name": "@0xkobold/pi-persona",
+  "version": "0.1.0",
+  "description": "Persona extension for pi agents — SOUL.md, IDENTITY.md, USER.md loading, scaffolding, and system prompt injection. Inspired by OpenClaw.",
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "persona",
+    "soul",
+    "identity",
+    "agent"
+  ],
+  "author": "0xKobold",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist/",
+    "templates/",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "bun test",
+    "prepublishOnly": "rm -rf dist && tsc"
+  },
+  "pi": {
+    "extensions": ["./dist/index.js"]
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": ">=0.65.0",
+    "@sinclair/typebox": ">=0.32.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/0xKobold/pi-persona"
+  }
+}
